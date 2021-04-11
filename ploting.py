@@ -9,8 +9,9 @@ import plotly.express as px
 import pandas as pd
 import time
 import subprocess
+import webbrowser
 
-from analysis import get_words, SparkSession
+from analysis import get_tweets, SparkSession
 cc = pd.read_csv("countries_codes_and_coordinates.txt")
 
 
@@ -105,17 +106,19 @@ def refresh_data(color):
 def start_spark():
     print("Starting spark session")
     spark = SparkSession.builder.appName("TwitterSentimentAnalysis").getOrCreate()
-    words = get_words(spark)
+    tweets = get_tweets(spark)
     print("Starting WriteStream")
-    query = words.writeStream.outputMode("complete").format("memory").queryName("alltweets") \
-        .trigger(processingTime='60 seconds').start()
+    query = tweets.writeStream.outputMode("complete").format("memory").queryName("alltweets") \
+        .trigger(processingTime='40 seconds').start()
 
     # query2 = words.writeStream.queryName("all_tweets2") \
     #     .outputMode("update").format("console") \
     #     .trigger(processingTime='60 seconds').start()
     print("WriteStream started")
     # query.awaitTermination()
-    time.sleep(120)
+    time.sleep(100)
+    print("Opening dash.")
+    webbrowser.open("http://127.0.0.1:8050/")
     return spark
 
 

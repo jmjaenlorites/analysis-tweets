@@ -20,22 +20,14 @@ class TweetsListener(StreamListener):
     def on_data(self, data):
         try:
             msg = json.loads(data)
-            # print(msg)
-            # if tweet is longer than 140 characters
+            place = msg["place"]["country_code"] if msg["place"] is not None else "??"
             if "extended_tweet" in msg:
-                msg["text"] = msg['extended_tweet']['full_text']
-                if msg['place'] is not None: print(msg['place'])
-                # add at the end of each tweet "t_end"
-                # self.client_socket.send(str(msg['extended_tweet']['full_text'] + "t_end").encode('utf-8'))
-                self.client_socket.send(str(data).encode('utf-8'))
-                # self.client_socket.send(json.dumps(msg).encode("utf-8"))
-                # print(msg['extended_tweet']['full_text'])
+                text = msg['extended_tweet']['full_text'].replace("\n", " ")+" p_"+place+"\n"
             else:
-                # add at the end of each tweet "t_end"
-                # self.client_socket.send(str(json.dumps(msg)).encode("utf-8"))
-                self.client_socket.send(str(data).encode('utf-8'))
-                # self.client_socket.send(str(msg['text'] + "t_end").encode('utf-8'))
-                if msg['place'] is not None: print(msg['place'])
+                text = msg["text"].replace("\n", " ")+" p_"+place+"\n"
+            # print(text)
+            self.client_socket.send(text.encode("utf-8"))
+            # if msg['place'] is not None: print(msg['place'])
             return True
         except BaseException as e:
             print("Error on_data: %s" % str(e))
@@ -53,17 +45,21 @@ def send_data(c_socket, keyword):
     auth.set_access_token(access_token, access_secret)
     # start sending data from the Streaming API
     twitter_stream = Stream(auth, TweetsListener(c_socket))
-    twitter_stream.filter(track=keyword, languages=["en"])
+    try:
+        twitter_stream.filter(track=keyword, languages=["en"])
+    except:
+        print("\n\nSome Error")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("-k", '--keyword',  type=str, default="corona")
+    parser.add_argument("-k", '--keyword',  type=str, default="WrestleMania")
     args = parser.parse_args()
     # server (local machine) creates listening socket
     s = socket.socket()
     host = "127.0.0.1"
     port = 9999
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((host, port))
     print("Listening on port: %s" % str(port))
     # server (local machine) listens for connections
