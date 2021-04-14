@@ -8,9 +8,10 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql import functions as F
 from textblob import TextBlob
-import json
+from connecting_mongo import start_mongo
 import pandas as pd
 import subprocess
+import time
 
 country_codes = pd.read_csv("./countries_codes_and_coordinates.txt")[["Alpha-2code", "Latitude", "Longitude"]]
 
@@ -43,9 +44,15 @@ def text_classification(tweets):
     return tweets
 
 
-def get_tweets(spark):
-    lines = spark.readStream.format("socket") \
-        .option("host", "127.0.0.1").option("port", 9999).load()
+def get_tweets(spark, escenario, keyword):
+    if escenario==2:
+        lines = spark.readStream.format("socket") \
+            .option("host", "127.0.0.1").option("port", 9999).load()
+    elif escenario==1:
+        # try:
+        lines = start_mongo(spark, keyword)
+        # except:
+        #     print("Ensure you have mongoDB opened and at the correct port")
     tweets = preprocessing(lines)
     tweets = text_classification(tweets)
     tweets.createOrReplaceTempView("tweets")

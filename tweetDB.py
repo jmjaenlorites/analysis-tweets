@@ -27,7 +27,7 @@ class StdOutListener(StreamListener):
               print(msg['text'])
               
               client = MongoClient('localhost', 49000)
-              db = client['Isla']
+              db = client['Test']
               collection = db[kword]
               collection.insert_one(msg)
               
@@ -41,7 +41,7 @@ class StdOutListener(StreamListener):
 if __name__ == '__main__':
     
     # kword = sys.argv[1]
-    kword = "isla tentaciones"
+    kword = "wednesday"
     l = StdOutListener()
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
@@ -51,4 +51,4 @@ if __name__ == '__main__':
     
     stream = Stream(auth, l)
     # print("Filter term: "+kword)
-    stream.filter(track=[kword])
+    stream.filter(track=[kword], languages=["en"])

@@ -52,7 +52,7 @@ def send_data(c_socket, keyword):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser()
     parser.add_argument("-k", '--keyword',  type=str, default="WrestleMania")
     args = parser.parse_args()
     # server (local machine) creates listening socket
