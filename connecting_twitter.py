@@ -6,10 +6,10 @@ import socket
 import json
 import argparse
 
-consumer_key = "Hs8q9Y5RnQdW5twdX3Y24adoD"
-consumer_secret = "W5kVjmMTyqafEPg8VIVKpkzHDJqmTiT58EHdNkKVYpWcI8vxYQ"
-access_token = '1333741454217375746-mqcMEgWznro7BSL6s8Pl0JSJ07xP6l'
-access_secret = 'BGMTw0L8Km9aU1Nt2PgbWT6agYBUdQei4dWecEEm2cInP'
+consumer_key = 
+consumer_secret = 
+access_token = 
+access_secret = 
 
 
 class TweetsListener(StreamListener):
